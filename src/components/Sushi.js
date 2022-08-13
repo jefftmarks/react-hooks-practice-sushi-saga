@@ -1,20 +1,38 @@
 import React from "react";
 
-function Sushi(props) {
+function Sushi({sushi, onEatSushi, budget}) {
+
+  function onClickSushi() {
+    if (budget >= sushi.price && sushi.isEaten !== true) {
+      fetch(`http://localhost:3001/sushis/${sushi.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({isEaten: true}),
+      })
+        .then(res => res.json())
+        .then(updatedSushi => onEatSushi(updatedSushi));
+    } else if (sushi.isEaten === true) {
+      alert("You can't eat an empty plate!");
+    } else if (budget < sushi.price) {
+      alert("You don't have enough money!");
+    }
+  }
+
   return (
     <div className="sushi">
-      <div className="plate" onClick={/* Give me a callback! */ null}>
-        {/* Tell me if this sushi has been eaten! */}
-        {false ? null : (
+      <div className="plate" onClick={onClickSushi}>
+        {sushi.isEaten ? null : (
           <img
-            src={/* Give me an image source! */ null}
-            alt={/* Give me a name! */ "Sushi"}
+            src={sushi.img_url}
+            alt={`${sushi.name} Sushi`}
             width="100%"
           />
         )}
       </div>
       <h4 className="sushi-details">
-        {/* Give me a name! */} - ${/* Give me a price! */}
+        {sushi.name} - ${sushi.price}
       </h4>
     </div>
   );
